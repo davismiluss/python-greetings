@@ -2,8 +2,7 @@ name: Python Greetings Pipeline
 
 on:
   push:
-    branches:
-      - main
+    branches: ["main"]
 
 jobs:
   build-docker-image:
@@ -11,7 +10,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Building and Pushing Docker Image for Python Greetings App..."
@@ -19,7 +18,6 @@ jobs:
       - name: Build Docker Image
         run: |
           docker build -t davismiluss/python-greetings-app:latest .
-          docker login -u your_dockerhub_username -p your_dockerhub_password
           docker push davismiluss/python-greetings-app:latest
 
   deploy-to-dev:
@@ -28,7 +26,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Deploying Python microservice to DEV environment..."
@@ -51,7 +49,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Running tests on DEV environment..."
@@ -68,7 +66,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Deploying Python microservice to STG environment..."
@@ -91,7 +89,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Running tests on STG environment..."
@@ -108,7 +106,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Deploying Python microservice to PROD environment..."
@@ -131,7 +129,7 @@ jobs:
 
     steps:
       - name: Checkout Repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       - name: Print Info
         run: echo "Running tests on PROD environment..."
