@@ -1,0 +1,143 @@
+name: Python Greetings Pipeline
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build-docker-image:
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Building and Pushing Docker Image for Python Greetings App..."
+
+      - name: Build Docker Image
+        run: |
+          docker build -t davismiluss/python-greetings-app:latest .
+          docker login -u your_dockerhub_username -p your_dockerhub_password
+          docker push davismiluss/python-greetings-app:latest
+
+  deploy-to-dev:
+    needs: build-docker-image
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Deploying Python microservice to DEV environment..."
+
+      - name: Pull Latest Python Greetings App
+        run: docker pull davismiluss/python-greetings-app:latest
+
+      - name: Stop Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-dev down
+
+      - name: Remove Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-dev rm -f
+
+      - name: Create Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-dev up -d
+
+  tests-on-dev:
+    needs: deploy-to-dev
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Running tests on DEV environment..."
+
+      - name: Pull Latest API Tests Image
+        run: docker pull davismiluss/api-tests:latest
+
+      - name: Run Tests
+        run: docker run --network=host --rm davismiluss/api-tests:latest run greetings greetings_dev
+
+  deploy-to-stg:
+    needs: tests-on-dev
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Deploying Python microservice to STG environment..."
+
+      - name: Pull Latest Python Greetings App
+        run: docker pull davismiluss/python-greetings-app:latest
+
+      - name: Stop Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-stg down
+
+      - name: Remove Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-stg rm -f
+
+      - name: Create Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-stg up -d
+
+  tests-on-stg:
+    needs: deploy-to-stg
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Running tests on STG environment..."
+
+      - name: Pull Latest API Tests Image
+        run: docker pull davismiluss/api-tests:latest
+
+      - name: Run Tests
+        run: docker run --network=host --rm davismiluss/api-tests:latest run greetings greetings_stg
+
+  deploy-to-prod:
+    needs: tests-on-stg
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Deploying Python microservice to PROD environment..."
+
+      - name: Pull Latest Python Greetings App
+        run: docker pull davismiluss/python-greetings-app:latest
+
+      - name: Stop Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-prod down
+
+      - name: Remove Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-prod rm -f
+
+      - name: Create Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-prod up -d
+
+  tests-on-prod:
+    needs: deploy-to-prod
+    runs-on: docker
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v2
+
+      - name: Print Info
+        run: echo "Running tests on PROD environment..."
+
+      - name: Pull Latest API Tests Image
+        run: docker pull davismiluss/api-tests:latest
+
+      - name: Run Tests
+        run: docker run --network=host --rm davismiluss/api-tests:latest run greetings greetings_prod
