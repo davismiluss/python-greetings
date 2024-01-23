@@ -81,6 +81,7 @@ jobs:
         run: docker-compose -f docker-compose.yml -p greetings-app-stg rm -f
 
       - name: Create Docker Service
+        run: docker-compose -f docker-compose.yml -p greetings-app-stg down --remove-orphans --volumes
         run: docker-compose -f docker-compose.yml -p greetings-app-stg up -d
 
   tests-on-stg:
