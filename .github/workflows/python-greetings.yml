@@ -75,7 +75,7 @@ jobs:
         run: docker pull davismiluss/python-greetings-app:latest
 
       - name: Stop Docker Service
-        run: docker-compose -f docker-compose.yml -p greetings-app-stg down -v
+        run: docker-compose -f docker-compose.yml -p greetings-app-stg down --remove-orphans --volumes
 
       - name: Remove Docker Service
         run: docker-compose -f docker-compose.yml -p greetings-app-stg rm -f
