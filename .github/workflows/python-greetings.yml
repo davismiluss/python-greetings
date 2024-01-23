@@ -1,4 +1,4 @@
-name: Python Greetings Pipeline
+name: Python Greetings Pipeline Test
 
 on:
   push:
